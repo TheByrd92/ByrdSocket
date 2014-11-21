@@ -17,7 +17,7 @@ import java.net.Socket;
  *
  * @author ibyrd
  */
-public class Mouths {
+public class Chick {
 
     Socket sock;
     ObjectOutputStream out;

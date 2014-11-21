@@ -4,10 +4,17 @@ package ByrdSocket;
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
-
+import com.sun.corba.se.pept.transport.Acceptor;
+import com.sun.corba.se.pept.transport.Connection;
+import com.sun.corba.se.pept.transport.EventHandler;
+import com.sun.corba.se.spi.orbutil.threadpool.Work;
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.nio.channels.SelectableChannel;
+import java.nio.channels.SelectionKey;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Map;
 
 /**
  *
@@ -15,52 +22,61 @@ import java.net.ServerSocket;
  */
 public class MomaByrd {
 
-    ServerSocket socks;
-
+    private ServerSocket socks;
+    private <Chick> chicks;
+    /**
+     * Sets the chicks list to an arraylist for more common use.
+     * Used when you want to just open a server quickly and with little fuss or
+     * when you want to track your own connections.
+     * <p>
+     * See {@link java.net.ServerSocket#ServerSocket(int)}
+     * </p>
+     * @param Port The port the server will open on.
+     */
     public MomaByrd(int Port) {
-        Mouths connection = new Mouths();
+        chicks = new ArrayList<Chick>();
         try {
             socks = new ServerSocket(Port);
         } catch (IOException ex) {
-            System.err.println("Port " + Port + " is in use already! Stopping...");
-            System.exit(-1);
+            System.err.println(Arrays.toString(ex.getStackTrace()));
+            System.exit(74);
         }
+    }
+    public MomaByrd(int Port, Map chicks){
+        this.chicks = chicks;
+        
+    }
         try {
-            System.out.println("Connection Class Created!");
-            System.out.println("Waiting for connection...");
-            connection.sock = socks.accept();
-            System.out.println("Connection has been accepted.");
-            connection.SetUp();
-            System.out.println("Object streams are declared.\nConnection is complete!");
-            String msg;
-            try {
-                while ((msg = connection.in.readObject().toString()) != null) {
-                    System.out.println(msg);
-                }
-            } catch (IOException ex) {
-                System.err.println("Lost Client's Stream.");
-            } catch (ClassNotFoundException ex) {
-                System.err.println("How the fuck would it not be able to find a java native class...");
-            }
+            Chick newChick = new Chick();
+            newChick.sock = socks.accept();
+            newChick.SetUp();
         } catch (IOException ex) {
-            System.err.println("Connection failed to complete! Stopping...");
-            System.exit(-1);
+            System.err.println(Arrays.toString(ex.getStackTrace()));
+            System.exit(74);
         }
-        System.out.println("Server closing.");
+        
+//        Object msg;
+//        try {
+//            while ((msg = chicks.in.readObject().toString()) != null) {
+//
+//            }
+//        } catch (IOException | ClassNotFoundException ex) {
+//            System.err.println(Arrays.toString(ex.getStackTrace()));
+//        }
+//        try {
+//            chicks.in.close();
+//            chicks.out.close();
+//        } catch (IOException ex) {
+//            System.err.println(Arrays.toString(ex.getStackTrace()));
+//            System.exit(74);
+//        }
+    
+    private void closeServerSocket(){
         try {
             socks.close();
         } catch (IOException ex) {
-            System.err.println("Server Socket Failed to close. Stopping...");
-            System.exit(-1);
+            System.err.println(Arrays.toString(ex.getStackTrace()));
+            System.exit(74);
         }
-        System.out.println("Closing connection...");
-        try {
-            connection.in.close();
-            connection.out.close();
-        } catch (IOException ex) {
-            System.err.println("Could not close Object Streams. Stopping...");
-            System.exit(-1);
-        }
-        System.out.println("Connection Closed!");
     }
 }

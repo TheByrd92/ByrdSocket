@@ -14,13 +14,13 @@ import java.net.UnknownHostException;
  *
  * @author ibyrd
  */
-public class BabyByrd {
+public class Mouth {
 
     Socket socks;
     ObjectOutputStream out;
     ObjectInputStream in;
 
-    public BabyByrd(String IP, int Port) {
+    public Mouth(String IP, int Port) {
         try {
             socks = new Socket(IP, Port);
         } catch (UnknownHostException ex) {
